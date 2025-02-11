@@ -3,6 +3,7 @@ source "https://rubygems.org"
 gem "bootsnap", require: false
 gem "jbuilder"
 gem "kamal", require: false
+gem "pg"
 gem "puma", ">= 5.0"
 gem "rails", "~> 8.0.1"
 gem "solid_cable"
