@@ -1,29 +1,37 @@
 source "https://rubygems.org"
 
-gem "rails", "~> 8.0.1"
-gem "sqlite3", ">= 2.1"
-gem "puma", ">= 5.0"
+gem "bootsnap", require: false
 gem "jbuilder"
-gem "tzinfo-data", platforms: %i[ windows jruby ]
+gem "kamal", require: false
+gem "puma", ">= 5.0"
+gem "rails", "~> 8.0.1"
+gem "solid_cable"
 gem "solid_cache"
 gem "solid_queue"
-gem "solid_cable"
-gem "bootsnap", require: false
-gem "kamal", require: false
+gem "sqlite3", ">= 2.1"
 gem "thruster", require: false
+gem "tzinfo-data", platforms: %i[ windows jruby ]
 
 group :development, :test do
-  gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
   gem "brakeman", require: false
-  gem "rubocop-rails-omakase", require: false
   gem "capybara"
   gem "database_cleaner"
+  gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
   gem "dotenv-rails"
   gem "factory_bot_rails"
   gem "faker"
   gem "pry-byebug"
   gem "pry-rails"
   gem "rspec-rails"
+  gem "rubocop-rails-omakase", require: false
+end
+
+group :development do
+  gem "rubocop"
+  gem "rubocop-config-prettier"
+  gem "rubocop-performance"
+  gem "rubocop-rails"
+  gem "rubocop-rspec"
 end
 
 group :test do
