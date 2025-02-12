@@ -74,7 +74,11 @@ RSpec.describe "/users", type: :request do
   describe "PATCH /update" do
     context "with valid parameters" do
       let(:new_attributes) {
-        { email_address: "new_user@example.com", role_ids: [role.id] }
+        {
+          email_address: "new_user@example.com",
+          role_ids: [role.id],
+          profile_attributes: { first_name: "New", last_name: "User" },
+        }
       }
       let(:role) { create(:role, role_name: "Admin") }
 
@@ -93,6 +97,37 @@ RSpec.describe "/users", type: :request do
               params: { user: new_attributes }, headers: valid_headers, as: :json
         expect(response).to have_http_status(:ok)
         expect(response.content_type).to match(a_string_including("application/json"))
+      end
+
+      it "renders a json with the user's profile and roles" do
+        user = User.create! valid_attributes
+        patch user_url(user),
+              params: { user: new_attributes }, headers: valid_headers, as: :json
+        json_response = JSON.parse(response.body)
+        expect(json_response["email_address"]).to eq("new_user@example.com")
+        expect(json_response["roles"].first["role_name"]).to eq("Admin")
+        expect(json_response["profile"]["first_name"]).to eq("New")
+        expect(json_response["profile"]["last_name"]).to eq("User")
+      end
+
+      it "creates a profile if one doesn't exist" do
+        user = User.create! valid_attributes
+        patch user_url(user),
+              params: { user: new_attributes }, headers: valid_headers, as: :json
+        user.reload
+        expect(user.profile).not_to be_nil
+        expect(user.profile.first_name).to eq("New")
+        expect(user.profile.last_name).to eq("User")
+      end
+
+      it "updates the profile if one exists" do
+        user = User.create! valid_attributes
+        user.create_profile(first_name: "Old", last_name: "Name")
+        patch user_url(user),
+              params: { user: new_attributes }, headers: valid_headers, as: :json
+        user.reload
+        expect(user.profile.first_name).to eq("New")
+        expect(user.profile.last_name).to eq("User")
       end
     end
 
