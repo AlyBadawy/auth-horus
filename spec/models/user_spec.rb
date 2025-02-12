@@ -1,6 +1,10 @@
 require "rails_helper"
 
 RSpec.describe User, type: :model do
+  describe "associations" do
+    it { is_expected.to have_and_belong_to_many(:roles) }
+  end
+
   describe "validations" do
     it "is valid with valid attributes" do
       user = described_class.new(email_address: "test@example.com", password: "password", password_confirmation: "password")
