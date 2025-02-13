@@ -1,10 +1,17 @@
 Rails.application.routes.draw do
-  resources :roles
-  resources :users
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  scope :admin do
+    resources :roles
+    resources :users
+  end
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
+  scope :identity do
+    get "/", to: "sessions#index", as: "my_sessions"
+    get "/:id", to: "sessions#show", as: "my_session"
+    post "/sign_in", to: "sessions#sign_in", as: "sign_in"
+    put "/refresh", to: "sessions#refresh", as: "refresh"
+    delete "/sign_out", to: "sessions#sign_out", as: "sign_out"
+  end
+
   get "up" => "rails/health#show", as: :rails_health_check
 
   # Defines the root path route ("/")
