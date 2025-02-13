@@ -1,5 +1,6 @@
 require "rails_helper"
 
+
 RSpec.describe "/admin/roles", type: :request do
   let(:valid_attributes) {
     { role_name: "Admin" }
