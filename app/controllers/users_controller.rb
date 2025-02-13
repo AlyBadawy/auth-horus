@@ -28,6 +28,7 @@ class UsersController < ApplicationController
   # PATCH/PUT /users/1.json
   def update
     if @user.update(user_params)
+      update_roles
       render :show, status: :ok, location: @user
     else
       render json: @user.errors, status: :unprocessable_entity
@@ -50,5 +51,12 @@ class UsersController < ApplicationController
   # Only allow a list of trusted parameters through.
   def user_params
     params.expect(user: [:email_address, :password, :password_confirmation])
+  end
+
+  def update_roles
+    ids = params[:user][:role_ids]
+    return if ids.blank?
+
+    @user.roles = Role.where(id: ids)
   end
 end

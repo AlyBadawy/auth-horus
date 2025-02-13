@@ -74,17 +74,17 @@ RSpec.describe "/users", type: :request do
   describe "PATCH /update" do
     context "with valid parameters" do
       let(:new_attributes) {
-        {
-          email_address: "new@example.com",
-        }
+        { email_address: "new_user@example.com", role_ids: [role.id] }
       }
+      let(:role) { create(:role, role_name: "Admin") }
 
-      it "updates the requested user" do
+      it "updates the requested user and assigns roles" do
         user = User.create! valid_attributes
         patch user_url(user),
               params: { user: new_attributes }, headers: valid_headers, as: :json
         user.reload
-        expect(user.email_address).to eq("new@example.com")
+        expect(user.email_address).to eq("new_user@example.com")
+        expect(user.roles).to include(role)
       end
 
       it "renders a JSON response with the user" do
