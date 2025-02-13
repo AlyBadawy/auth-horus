@@ -3,28 +3,23 @@ require "rails_helper"
 RSpec.describe SessionsController, type: :routing do
   describe "routing" do
     it "routes to #index" do
-      expect(get: "/sessions").to route_to("sessions#index")
+      expect(get: "/identity/").to route_to("sessions#index")
     end
 
     it "routes to #show" do
-      expect(get: "/sessions/1").to route_to("sessions#show", id: "1")
+      expect(get: "/identity/1").to route_to("sessions#show", id: "1")
     end
 
-
-    it "routes to #create" do
-      expect(post: "/sessions").to route_to("sessions#create")
+    it "routes to #sign_in" do
+      expect(post: "/identity/sign_in").to route_to("sessions#sign_in")
     end
 
-    it "routes to #update via PUT" do
-      expect(put: "/sessions/1").to route_to("sessions#update", id: "1")
+    it "routes to #refresh via PUT" do
+      expect(put: "/identity/refresh").to route_to("sessions#refresh")
     end
 
-    it "routes to #update via PATCH" do
-      expect(patch: "/sessions/1").to route_to("sessions#update", id: "1")
-    end
-
-    it "routes to #destroy" do
-      expect(delete: "/sessions/1").to route_to("sessions#destroy", id: "1")
+    it "routes to #sign_out" do
+      expect(delete: "/identity/sign_out").to route_to("sessions#sign_out")
     end
   end
 end

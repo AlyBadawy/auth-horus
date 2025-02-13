@@ -1,12 +1,12 @@
 FactoryBot.define do
   factory :session do
-    ip_address { "MyString" }
-    user_agent { "MyString" }
+    ip_address { "127.0.0.1" }
+    user_agent { "RSpec" }
     refresh_count { 1 }
-    refresh_token { "MyString" }
-    last_refreshed_at { "2025-02-12 16:33:20" }
-    expires_at { "2025-02-12 16:33:20" }
+    refresh_token { SecureRandom.hex(64) }
+    last_refreshed_at { Time.current }
+    refresh_token_expires_at { 1.week.from_now }
     revoked { false }
-    user { nil }
+    association :user
   end
 end
