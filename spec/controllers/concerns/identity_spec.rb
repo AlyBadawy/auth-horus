@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe TestController, type: :request do
+RSpec.describe Identity, type: :request do
   before do
     Rails.application.routes.draw do
       get "/test", to: "test#index"
