@@ -16,6 +16,19 @@ group :development, :test do
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
   gem "brakeman", require: false
   gem "rubocop-rails-omakase", require: false
+  gem "capybara"
+  gem "database_cleaner"
+  gem "dotenv-rails"
+  gem "factory_bot_rails"
+  gem "faker"
+  gem "pry-byebug"
+  gem "pry-rails"
+  gem "rspec-rails"
+end
+
+group :test do
+  gem "shoulda-matchers"
+  gem "simplecov"
 end
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
