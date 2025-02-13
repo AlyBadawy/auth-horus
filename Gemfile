@@ -1,5 +1,6 @@
 source "https://rubygems.org"
 
+gem "bcrypt", "~> 3.1.7"
 gem "bootsnap", require: false
 gem "jbuilder"
 gem "kamal", require: false
@@ -41,9 +42,6 @@ group :test do
   gem "shoulda-matchers"
   gem "simplecov"
 end
-
-# Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
-# gem "bcrypt", "~> 3.1.7"
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
