@@ -1,6 +1,6 @@
 class SessionsController < ApplicationController
-  skip_authentication! only: %i[sign_in refresh]
-  before_action :set_session, only: %i[show]
+  skip_authentication! only: %i[create update]
+  before_action :set_session, only: %i[show destroy]
 
   def index
     @sessions = Current.user&.sessions || []
@@ -9,7 +9,7 @@ class SessionsController < ApplicationController
   def show
   end
 
-  def sign_in
+  def create
     params.require([:email_address, :password])
     if user = User.authenticate_by(params.permit([:email_address, :password]))
       start_new_session_for user
@@ -28,7 +28,7 @@ class SessionsController < ApplicationController
     end
   end
 
-  def refresh
+  def update
     if Current.session = Session.find_by(refresh_token: params[:refresh_token])
       if Current.session.is_valid_session? &&
          Current.session.ip_address == request.ip &&
@@ -46,15 +46,15 @@ class SessionsController < ApplicationController
     render status: :unauthorized, json: { error: "Invalid or expired token." }
   end
 
-  def sign_out
-    Current.session&.revoke!
-    Current.session = nil
+  def destroy
+    @session&.revoke!
+    Current.session = nil if @session == Current.session
   end
 
   private
 
   def set_session
-    params.require(:id)
-    @session = Current.user.sessions.find(params.expect(:id))
+    id = params[:id]
+    @session = id ? Current.user.sessions.find(params.expect(:id)) : Current.session
   end
 end
