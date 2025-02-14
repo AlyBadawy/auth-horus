@@ -4,13 +4,10 @@ Rails.application.routes.draw do
     resources :users
   end
 
-  scope :identity do
-    get "/", to: "sessions#index", as: "my_sessions"
-    get "/:id", to: "sessions#show", as: "my_session"
-    post "/sign_in", to: "sessions#sign_in", as: "sign_in"
-    put "/refresh", to: "sessions#refresh", as: "refresh"
-    delete "/sign_out", to: "sessions#sign_out", as: "sign_out"
-  end
+  resource :session, as: "current_session" # create (sign_in), show (current_session), update (refresh), destroy(sign_out)
+  resources :sessions, only: [:index, :show, :destroy] # list sessions, show specific session, revoke specific session
+
+  resources :passwords, param: :token, only: [:create, :update]
 
   get "up" => "rails/health#show", as: :rails_health_check
 

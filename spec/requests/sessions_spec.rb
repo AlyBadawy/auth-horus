@@ -4,7 +4,7 @@ RSpec.describe "/identity", type: :request do
   describe "GET /index" do
     it "renders a successful response" do
       create(:session, user: @signed_in_user)
-      get my_sessions_url, headers: @valid_headers, as: :json
+      get sessions_url, headers: @valid_headers, as: :json
       expect(response).to be_successful
       expect(JSON.parse(response.body)).to be_an_instance_of(Array)
       expect(JSON.parse(response.body).first).to include(
@@ -19,9 +19,22 @@ RSpec.describe "/identity", type: :request do
   end
 
   describe "GET /show" do
-    it "renders a successful response" do
+    it "renders the requested session" do
       new_session = create(:session, user: @signed_in_user)
-      get my_session_url(new_session), headers: @valid_headers, as: :json
+      get session_url(new_session), headers: @valid_headers, as: :json
+      expect(response).to be_successful
+      expect(JSON.parse(response.body)).to include(
+        "id",
+        "refresh_count",
+        "refresh_token",
+        "refresh_token_expires_at",
+        "last_refreshed_at",
+        "revoked"
+      )
+    end
+
+    it "renders a successful response" do
+      get current_session_url, headers: @valid_headers, as: :json
       expect(response).to be_successful
       expect(JSON.parse(response.body)).to include(
         "id",
@@ -52,7 +65,7 @@ RSpec.describe "/identity", type: :request do
     context "with valid parameters" do
       it "signs in the user and returns tokens" do
         headers = { "User-Agent" => "RSpec" }
-        post sign_in_url, params: valid_attributes, headers: headers, as: :json
+        post current_session_url, params: valid_attributes, headers: headers, as: :json
         expect(response).to have_http_status(:created)
         expect(response.content_type).to match(a_string_including("application/json"))
         expect(response.body).to include(
@@ -66,7 +79,7 @@ RSpec.describe "/identity", type: :request do
     context "with invalid parameters" do
       it "returns unauthorized status" do
         headers = { "User-Agent" => "RSpec" }
-        post sign_in_url, params: invalid_attributes, headers: headers, as: :json
+        post current_session_url, params: invalid_attributes, headers: headers, as: :json
         expect(response).to have_http_status(:unauthorized)
         expect(response.content_type).to match(a_string_including("application/json"))
         expect(response.body).to include("error")
@@ -88,7 +101,7 @@ RSpec.describe "/identity", type: :request do
     context "with valid parameters" do
       it "refreshes the session and returns new tokens" do
         headers = { "User-Agent" => "RSpec" }
-        put refresh_url, params: valid_attributes, headers: headers, as: :json
+        put current_session_url, params: valid_attributes, headers: headers, as: :json
         expect(response).to have_http_status(:created)
         expect(response.content_type).to match(a_string_including("application/json"))
         expect(response.body).to include(
@@ -102,7 +115,7 @@ RSpec.describe "/identity", type: :request do
     context "with invalid parameters" do
       it "returns unauthorized status" do
         headers = { "User-Agent" => "RSpec" }
-        put refresh_url, params: invalid_attributes, headers: headers, as: :json
+        put current_session_url, params: invalid_attributes, headers: headers, as: :json
         expect(response).to have_http_status(:unauthorized)
         expect(response.content_type).to match(a_string_including("application/json"))
         expect(response.body).to include("error")
@@ -113,15 +126,23 @@ RSpec.describe "/identity", type: :request do
   describe "DELETE /destroy" do
     let(:new_user) { create(:user, password: "password") }
     let(:new_session) { create(:session, user: new_user) }
+    let(:another_session) { create(:session, user: new_user) }
     let(:new_valid_headers) {
       token = JwtHelper.encode(new_session)
       { "Authorization" => "Bearer #{token}", "User-Agent" => "RSpec" }
     }
 
-    it "destroys the requested session" do
-      delete sign_out_url, headers: new_valid_headers, as: :json
+    it "destroys the current session" do
+      delete current_session_url, headers: new_valid_headers, as: :json
       new_session.reload
       expect(new_session.revoked).to be_truthy
+      expect(response).to have_http_status(:no_content)
+    end
+
+    it "destroys the requested session" do
+      delete session_url(another_session), headers: new_valid_headers, as: :json
+      another_session.reload
+      expect(another_session.revoked).to be_truthy
       expect(response).to have_http_status(:no_content)
     end
   end
