@@ -1,6 +1,7 @@
 require "simplecov"
 SimpleCov.start do
   add_filter "/spec/"
+  minimum_coverage ENV.fetch("SIMPLECOV_MINIMUM_COVERAGE", 95).to_i
 end
 
 RSpec.configure do |config|
