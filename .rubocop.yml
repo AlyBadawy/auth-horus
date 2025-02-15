@@ -144,6 +144,9 @@ Rails:
   Enabled: true
 Rails/ApplicationController:
   Enabled: true
+Rails/DynamicFindBy:
+  Whitelist:
+    - find_by_password_reset_token!
 Rails/FilePath:
   Enabled: false
 Rails/I18nLocaleTexts:
