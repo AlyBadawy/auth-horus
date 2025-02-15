@@ -100,8 +100,8 @@ RSpec.describe "/admin/users", type: :request do
         patch user_url(user),
               params: { user: new_attributes }, headers: @valid_headers, as: :json
         json_response = JSON.parse(response.body)
-        expect(json_response["email_address"]).to eq("new_user@example.com")
         expect(json_response["roles"].first["role_name"]).to eq("Admin")
+        expect(json_response["profile"]["email_address"]).to eq("new_user@example.com")
         expect(json_response["profile"]["first_name"]).to eq("New")
         expect(json_response["profile"]["last_name"]).to eq("User")
       end

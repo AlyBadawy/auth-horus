@@ -11,6 +11,9 @@ Rails.application.routes.draw do
 
   resources :passwords, param: :token, only: [:create, :update]
 
+  resource :profile, only: [:show, :create, :update, :destroy], as: "current_profile"
+  resources :profiles, param: :username, only: [:show]
+
   get "up" => "rails/health#show", as: :rails_health_check
 
   # Defines the root path route ("/")
