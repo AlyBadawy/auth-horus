@@ -1,8 +1,8 @@
 require "rails_helper"
 
-RSpec.describe "/identity", type: :request do
-  describe "GET /index" do
-    it "renders a successful response" do
+RSpec.describe "/session[s]", type: :request do
+  describe "GET /sessions" do
+    it "lists all sessions for the current user" do
       create(:session, user: @signed_in_user)
       get sessions_url, headers: @valid_headers, as: :json
       expect(response).to be_successful
@@ -16,10 +16,16 @@ RSpec.describe "/identity", type: :request do
         "revoked"
       )
     end
+
+    it "return 401 unauthorized when no valid headers" do
+      get sessions_url, as: :json
+      expect(response).not_to be_successful
+      expect(response).to have_http_status(:unauthorized)
+    end
   end
 
-  describe "GET /show" do
-    it "renders the requested session" do
+  describe "GET /session[s]" do
+    it "shows the session for a given ID (get sessions/:id)" do
       new_session = create(:session, user: @signed_in_user)
       get session_url(new_session), headers: @valid_headers, as: :json
       expect(response).to be_successful
@@ -33,7 +39,13 @@ RSpec.describe "/identity", type: :request do
       )
     end
 
-    it "renders a successful response" do
+    it "shows 404 not found for the wrong session ID (get sessions/:id)" do
+      get session_url("wrong"), headers: @valid_headers, as: :json
+      expect(response).not_to be_successful
+      expect(response).to have_http_status(:not_found)
+    end
+
+    it "shows the session for current session (get session)" do
       get current_session_url, headers: @valid_headers, as: :json
       expect(response).to be_successful
       expect(JSON.parse(response.body)).to include(
@@ -45,9 +57,15 @@ RSpec.describe "/identity", type: :request do
         "revoked"
       )
     end
+
+    it "return 401 unauthorized when no valid headers" do
+      get current_session_url, as: :json
+      expect(response).not_to be_successful
+      expect(response).to have_http_status(:unauthorized)
+    end
   end
 
-  describe "POST /sign_in" do
+  describe "POST /session" do
     let(:new_user) { create(:user, password: "password") }
     let(:new_session) { create(:session, user: new_user) }
     let(:new_valid_headers) {
@@ -144,6 +162,12 @@ RSpec.describe "/identity", type: :request do
       another_session.reload
       expect(another_session.revoked).to be_truthy
       expect(response).to have_http_status(:no_content)
+    end
+
+    it "return 401 unauthorized when no valid headers" do
+      delete current_session_url, as: :json
+      expect(response).not_to be_successful
+      expect(response).to have_http_status(:unauthorized)
     end
   end
 end
