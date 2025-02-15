@@ -3,7 +3,7 @@ class PasswordsController < ApplicationController
   before_action :set_user_by_password_token, only: %i[ update ]
 
   def create
-    if user = User.find_by(email_address: params[:email_address])
+    if user = User.find_by(email_address: params.require(:email_address))
       PasswordsMailer.reset(user).deliver_later
     end
 
@@ -21,7 +21,7 @@ class PasswordsController < ApplicationController
   private
 
   def set_user_by_password_token
-    @user = User.find_by!(password_reset_token: params[:token])
+    @user = User.find_by_password_reset_token!(params[:token])
   rescue ActiveSupport::MessageVerifier::InvalidSignature
     render status: :unprocessable_entity, json: { errors: { token: "is invalid or has expired" } }
   end
