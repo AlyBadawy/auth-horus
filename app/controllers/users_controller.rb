@@ -29,7 +29,6 @@ class UsersController < ApplicationController
   def update
     if @user.update(user_params)
       update_roles
-      # update_profile
       render :show, status: :ok, location: @user
     else
       render json: @user.errors, status: :unprocessable_entity
@@ -51,7 +50,7 @@ class UsersController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def user_params
-    params.expect(user: [:email_address, :password, :password_confirmation, role_ids: [], profile_attributes: [:first_name, :last_name]])
+    params.expect(user: [:email_address, :password, :password_confirmation, role_ids: [], profile_attributes: [:first_name, :last_name, :phone, :username]])
   end
 
   def update_roles

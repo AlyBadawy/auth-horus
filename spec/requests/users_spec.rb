@@ -73,7 +73,7 @@ RSpec.describe "/admin/users", type: :request do
         {
           email_address: "new_user@example.com",
           role_ids: [role.id],
-          profile_attributes: { first_name: "New", last_name: "User" },
+          profile_attributes: { first_name: "New", last_name: "User", username: "newUsername" },
         }
       }
       let(:role) { create(:role, role_name: "Admin") }
@@ -85,6 +85,7 @@ RSpec.describe "/admin/users", type: :request do
         user.reload
         expect(user.email_address).to eq("new_user@example.com")
         expect(user.roles).to include(role)
+        expect(user.profile.username).to eq("newUsername")
       end
 
       it "renders a JSON response with the user" do
