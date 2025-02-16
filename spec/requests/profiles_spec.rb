@@ -121,12 +121,67 @@ RSpec.describe "/profiles", type: :request do
   #   end
   # end
 
-  # describe "DELETE /destroy" do
-  #   it "destroys the requested profile" do
-  #     profile = Profile.create! valid_attributes
-  #     expect {
-  #       delete profile_url(profile), headers: valid_headers, as: :json
-  #     }.to change(Profile, :count).by(-1)
-  #   end
-  # end
+  describe "DELETE /destroy" do
+    context "when the correct password is provided" do
+      it "renders a no_content response" do
+        delete current_profile_url, params: { password: "password" }, headers: @valid_headers, as: :json
+        expect(response).to have_http_status(:no_content)
+      end
+
+      it "destroys the current profile" do
+        current_profile_id = @signed_in_profile.id
+        expect {
+          delete current_profile_url, params: { password: "password" }, headers: @valid_headers, as: :json
+        }.to change(Profile, :count).by(-1)
+        expect(Profile.find_by(id: current_profile_id)).to be_nil
+      end
+
+      it "destroys the current user" do
+        current_user_id = @signed_in_user.id
+        expect {
+          delete current_profile_url, params: { password: "password" }, headers: @valid_headers, as: :json
+        }.to change(User, :count).by(-1)
+        expect(User.find_by(id: current_user_id)).to be_nil
+      end
+    end
+
+    context "when an incorrect password is provided" do
+      it "renders a no_content response" do
+        delete current_profile_url, params: { password: "wrong" }, headers: @valid_headers, as: :json
+        expect(response).to have_http_status(:bad_request)
+      end
+
+      it "doesn't destroy the current profile" do
+        expect {
+          delete current_profile_url, params: { password: "wrong" }, headers: @valid_headers, as: :json
+        }.not_to change(Profile, :count)
+      end
+
+      it "destroys the current user" do
+        expect {
+          delete current_profile_url, params: { password: "wrong" }, headers: @valid_headers, as: :json
+        }.not_to change(User, :count)
+      end
+    end
+
+    context "when password is missing" do
+      it "renders a no_content response" do
+        delete current_profile_url, headers: @valid_headers, as: :json
+        expect(response).to have_http_status(:bad_request)
+        expect(response.body).to eq({ error: "param is missing or the value is empty or invalid: password" }.to_json)
+      end
+
+      it "doesn't destroy the current profile" do
+        expect {
+          delete current_profile_url, headers: @valid_headers, as: :json
+        }.not_to change(Profile, :count)
+      end
+
+      it "destroys the current user" do
+        expect {
+          delete current_profile_url, headers: @valid_headers, as: :json
+        }.not_to change(User, :count)
+      end
+    end
+  end
 end

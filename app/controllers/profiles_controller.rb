@@ -31,7 +31,15 @@ class ProfilesController < ApplicationController
   # DELETE /profiles/1
   # DELETE /profiles/1.json
   def destroy
-    @profile.destroy!
+    if user = Current.user.authenticate(params.require(:password))
+      user.destroy!
+      Current.session = nil
+    else
+      render status: :bad_request, json: {
+        error: "Unable to verify your account",
+        fix: "Make sure you entered the correct password",
+      }
+    end
   end
 
   private
