@@ -1,6 +1,30 @@
 require "rails_helper"
 
 RSpec.describe "/profiles", type: :request do
+  let(:valid_attributes) {
+    {
+      email_address: "test@example.com",
+      password: "password",
+      password_confirmation: "password",
+      profile_attributes: {
+        first_name: "john",
+        last_name: "doe",
+        username: "super_cool_user",
+      },
+    }
+  }
+
+  let(:invalid_attributes) {
+    {
+      email_address: "test@example.com",
+      password: "password",
+      password_confirmation: "invalid",
+      profile_attributes: {
+        username: "super_cool_user",
+      },
+    }
+  }
+
   describe "GET /show" do
     context "when showing current user's profile" do
       let(:expected_response) {
@@ -53,73 +77,39 @@ RSpec.describe "/profiles", type: :request do
     end
   end
 
-  # describe "POST /create" do
-  #   context "with valid parameters" do
-  #     it "creates a new Profile" do
-  #       expect {
-  #         post profiles_url,
-  #              params: { profile: valid_attributes }, headers: valid_headers, as: :json
-  #       }.to change(Profile, :count).by(1)
-  #     end
+  describe "POST /create" do
+    context "with valid parameters" do
+      it "creates a new User and profile" do
+        expect {
+          post current_profile_url,
+               params: { user: valid_attributes }, headers: @valid_headers, as: :json
+        }.to change(User, :count).by(1).and change(Profile, :count).by(1)
+      end
 
-  #     it "renders a JSON response with the new profile" do
-  #       post profiles_url,
-  #            params: { profile: valid_attributes }, headers: valid_headers, as: :json
-  #       expect(response).to have_http_status(:created)
-  #       expect(response.content_type).to match(a_string_including("application/json"))
-  #     end
-  #   end
+      it "renders a JSON response with the new user" do
+        post current_profile_url,
+             params: { user: valid_attributes }, headers: @valid_headers, as: :json
+        expect(response).to have_http_status(:created)
+        expect(response.content_type).to match(a_string_including("application/json"))
+      end
+    end
 
-  #   context "with invalid parameters" do
-  #     it "does not create a new Profile" do
-  #       expect {
-  #         post profiles_url,
-  #              params: { profile: invalid_attributes }, as: :json
-  #       }.to change(Profile, :count).by(0)
-  #     end
+    context "with invalid parameters" do
+      it "does not create a new User" do
+        expect {
+          post users_url,
+               params: { user: invalid_attributes }, as: :json
+        }.not_to change(User, :count)
+      end
 
-  #     it "renders a JSON response with errors for the new profile" do
-  #       post profiles_url,
-  #            params: { profile: invalid_attributes }, headers: valid_headers, as: :json
-  #       expect(response).to have_http_status(:unprocessable_entity)
-  #       expect(response.content_type).to match(a_string_including("application/json"))
-  #     end
-  #   end
-  # end
-
-  # describe "PATCH /update" do
-  #   context "with valid parameters" do
-  #     let(:new_attributes) {
-  #       skip("Add a hash of attributes valid for your model")
-  #     }
-
-  #     it "updates the requested profile" do
-  #       profile = Profile.create! valid_attributes
-  #       patch profile_url(profile),
-  #             params: { profile: new_attributes }, headers: valid_headers, as: :json
-  #       profile.reload
-  #       skip("Add assertions for updated state")
-  #     end
-
-  #     it "renders a JSON response with the profile" do
-  #       profile = Profile.create! valid_attributes
-  #       patch profile_url(profile),
-  #             params: { profile: new_attributes }, headers: valid_headers, as: :json
-  #       expect(response).to have_http_status(:ok)
-  #       expect(response.content_type).to match(a_string_including("application/json"))
-  #     end
-  #   end
-
-  #   context "with invalid parameters" do
-  #     it "renders a JSON response with errors for the profile" do
-  #       profile = Profile.create! valid_attributes
-  #       patch profile_url(profile),
-  #             params: { profile: invalid_attributes }, headers: valid_headers, as: :json
-  #       expect(response).to have_http_status(:unprocessable_entity)
-  #       expect(response.content_type).to match(a_string_including("application/json"))
-  #     end
-  #   end
-  # end
+      it "renders a JSON response with errors for the new user" do
+        post users_url,
+             params: { user: invalid_attributes }, headers: @valid_headers, as: :json
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.content_type).to match(a_string_including("application/json"))
+      end
+    end
+  end
 
   describe "DELETE /destroy" do
     context "when the correct password is provided" do

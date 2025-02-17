@@ -1,4 +1,5 @@
 class ProfilesController < ApplicationController
+  skip_authentication! only: [:create]
   before_action :set_profile, only: %i[ show ]
 
   # GET /profiles/1
@@ -9,22 +10,24 @@ class ProfilesController < ApplicationController
   # POST /profiles
   # POST /profiles.json
   def create
-    @profile = Profile.new(profile_params)
+    @user = User.new(user_params)
+    @user.build_profile(profile_params)
 
-    if @profile.save
-      render :show, status: :created, location: @profile
+    if @user.save
+      render :show, status: :created, location: @user.profile
     else
-      render json: @profile.errors, status: :unprocessable_entity
+      render json: @user.errors, status: :unprocessable_entity
     end
   end
 
   # PATCH/PUT /profiles/1
   # PATCH/PUT /profiles/1.json
   def update
-    if @profile.update(profile_params)
-      render :show, status: :ok, location: @profile
+    if @user.update(user_params)
+      @profile = @user.profile
+      render :show, status: :created, location: @profile
     else
-      render json: @profile.errors, status: :unprocessable_entity
+      render json: @user.errors, status: :unprocessable_entity
     end
   end
 
@@ -51,7 +54,11 @@ class ProfilesController < ApplicationController
   end
 
   # Only allow a list of trusted parameters through.
+  def user_params
+    params.expect(user: [:email_address, :password, :password_confirmation])
+  end
+
   def profile_params
-    params.fetch(:profile, {})
+    params.expect(profile: [:first_name, :last_name, :phone, :username])
   end
 end
