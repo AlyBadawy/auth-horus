@@ -9,6 +9,8 @@ gem "pg"
 gem "puma", ">= 5.0"
 gem "rack-cors"
 gem "rails", "~> 8.0.1"
+gem "rswag-api"
+gem "rswag-ui"
 gem "solid_cable"
 gem "solid_cache"
 gem "solid_queue"
@@ -27,6 +29,7 @@ group :development, :test do
   gem "pry-byebug"
   gem "pry-rails"
   gem "rspec-rails"
+  gem "rswag-specs"
   gem "rubocop-rails-omakase", require: false
 end
 
