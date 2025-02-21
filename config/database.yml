@@ -15,18 +15,18 @@ postgres: &postgres
 
 development:
   <<: *postgres
-  database: auth_horus_development
+  database: <%= "#{ENV.fetch('APP_NAME', 'horus_backend_engine')}_development" %>
 
 test:
   <<: *postgres
-  database: auth_horus_test
+  database: <%= "#{ENV.fetch('APP_NAME', 'horus_backend_engine')}_test" %>
 
 # Store production database in the storage/ directory, which by default
 # is mounted as a persistent Docker volume in config/deploy.yml.
 production:
   primary:
     <<: *postgres
-    database: auth_horus_production
+    database: <%= "#{ENV.fetch('APP_NAME', 'horus_backend_engine')}_production" %>
   cache:
     <<: *default
     database: storage/production_cache.sqlite3
