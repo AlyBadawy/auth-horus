@@ -2,8 +2,8 @@
 # check=error=true
 
 # This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
-# docker build -t auth_horus .
-# docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name auth_horus auth_horus
+# docker build -t <docker_image_name> .
+# docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name <docker_image_name> <docker_image_name>
 
 # For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
 
