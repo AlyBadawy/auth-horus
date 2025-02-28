@@ -4,6 +4,8 @@ Rails.application.routes.draw do
     resources :users
   end
 
+  mount Flipper::Api.app(Flipper) => "/admin/flipper"
+
   resource :session, as: "current_session" # create (sign_in), show (current_session), update (refresh), destroy(sign_out)
   resources :sessions, only: [:index, :show, :destroy] # list sessions, show specific session, revoke specific session
 
