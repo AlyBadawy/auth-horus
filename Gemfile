@@ -2,6 +2,9 @@ source "https://rubygems.org"
 
 gem "bcrypt", "~> 3.1.7"
 gem "bootsnap", require: false
+gem "flipper"
+gem "flipper-active_record"
+gem "flipper-api"
 gem "jbuilder"
 gem "jwt"
 gem "kamal", require: false
