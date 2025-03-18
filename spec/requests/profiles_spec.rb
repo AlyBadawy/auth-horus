@@ -55,12 +55,11 @@ RSpec.describe "/profiles", type: :request do
     end
 
     context "when showing other user's profile" do
-      let(:user) { create(:user) }
-      let(:profile) { create(:profile, user: user) }
+      let(:profile) { create(:profile, user: create(:user)) }
       let(:expected_response) {
         {
           "id" => profile.id,
-          "email_address" => user.email_address,
+          "email_address" => profile.user.email_address,
           "first_name" => profile.first_name,
           "last_name" => profile.last_name,
           "phone" => profile.phone,
