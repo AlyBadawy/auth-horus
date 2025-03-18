@@ -1,16 +1,20 @@
 require "rails_helper"
 
 RSpec.describe "/profiles", type: :request do
-  let(:valid_attributes) {
+  let(:valid_user_attributes) {
     {
       email_address: "test@example.com",
       password: "password",
       password_confirmation: "password",
-      profile_attributes: {
-        first_name: "john",
-        last_name: "doe",
-        username: "super_cool_user",
-      },
+    }
+  }
+
+  let(:valid_profile_attributes) {
+    {
+
+      first_name: "john",
+      last_name: "doe",
+      username: "super_cool_user",
     }
   }
 
@@ -65,13 +69,9 @@ RSpec.describe "/profiles", type: :request do
         }
       }
 
-      it "renders a successful response" do
+      it "renders the user's profile" do
         get profile_url(profile.username), headers: @valid_headers, as: :json
         expect(response).to be_successful
-      end
-
-      it "renders the current user's profile" do
-        get profile_url(profile.username), headers: @valid_headers, as: :json
         expect(JSON.parse(response.body)).to eq(expected_response)
       end
     end
@@ -82,13 +82,13 @@ RSpec.describe "/profiles", type: :request do
       it "creates a new User and profile" do
         expect {
           post current_profile_url,
-               params: { user: valid_attributes }, headers: @valid_headers, as: :json
+               params: { user: valid_user_attributes, profile: valid_profile_attributes }, headers: @valid_headers, as: :json
         }.to change(User, :count).by(1).and change(Profile, :count).by(1)
       end
 
       it "renders a JSON response with the new user" do
         post current_profile_url,
-             params: { user: valid_attributes }, headers: @valid_headers, as: :json
+             params: { user: valid_user_attributes, profile: valid_profile_attributes }, headers: @valid_headers, as: :json
         expect(response).to have_http_status(:created)
         expect(response.content_type).to match(a_string_including("application/json"))
       end
