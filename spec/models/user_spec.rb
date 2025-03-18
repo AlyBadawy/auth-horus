@@ -8,7 +8,11 @@ RSpec.describe User, type: :model do
 
   describe "validations" do
     it "is valid with valid attributes" do
-      user = described_class.new(email_address: "test@example.com", password: "password", password_confirmation: "password")
+      user = described_class.new(
+        email_address: "test@example.com",
+        password: "password",
+        password_confirmation: "password",
+      )
       expect(user).to be_valid
     end
 
@@ -40,9 +44,9 @@ RSpec.describe User, type: :model do
 
   describe "password authorization" do
     it "authenticate user by password" do
-      user = described_class.create(email_address: "test@example.com", password: "secure_password", password_confirmation: "secure_password")
-      expect(described_class.authenticate_by(email_address: "test@example.com", password: "invalid_password")).to be_nil
-      expect(described_class.authenticate_by(email_address: "test@example.com", password: "secure_password")).to eq(user)
+      user = FactoryBot.create(:user, password: "secure_password", password_confirmation: "secure_password")
+      expect(described_class.authenticate_by(email_address: user.email_address, password: "invalid_password")).to be_nil
+      expect(described_class.authenticate_by(email_address: user.email_address, password: "secure_password")).to eq(user)
     end
   end
 end

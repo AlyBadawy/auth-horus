@@ -73,7 +73,7 @@ RSpec.describe "/admin/users", type: :request do
         {
           email_address: "new_user@example.com",
           role_ids: [role.id],
-          profile_attributes: { first_name: "New", last_name: "User" },
+          profile_attributes: { first_name: "New", last_name: "User", username: "newUsername" },
         }
       }
       let(:role) { create(:role, role_name: "Admin") }
@@ -85,6 +85,7 @@ RSpec.describe "/admin/users", type: :request do
         user.reload
         expect(user.email_address).to eq("new_user@example.com")
         expect(user.roles).to include(role)
+        expect(user.profile.username).to eq("newUsername")
       end
 
       it "renders a JSON response with the user" do
@@ -100,8 +101,8 @@ RSpec.describe "/admin/users", type: :request do
         patch user_url(user),
               params: { user: new_attributes }, headers: @valid_headers, as: :json
         json_response = JSON.parse(response.body)
-        expect(json_response["email_address"]).to eq("new_user@example.com")
         expect(json_response["roles"].first["role_name"]).to eq("Admin")
+        expect(json_response["profile"]["email_address"]).to eq("new_user@example.com")
         expect(json_response["profile"]["first_name"]).to eq("New")
         expect(json_response["profile"]["last_name"]).to eq("User")
       end
